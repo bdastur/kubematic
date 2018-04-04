@@ -1,2 +1,2 @@
 # kubematic
-Simplify kubectl operations
+Simplify kubectl operations.
