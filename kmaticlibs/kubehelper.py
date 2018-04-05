@@ -8,9 +8,41 @@ class KubeHelper(object):
     def __init__(self):
         self.cmd = commands.Commands()
 
-    def create_namespace(self, ns_name):
+    def create_namespace(self, kmatic_options):
         """Create a new namespace"""
-        print "Create new namespace: ", ns_name
+        if 'namespace' not in kmatic_options:
+            print "Namespace is required."
+            return
+        namespace = kmatic_options['namespace']
+        print "Create new namespace: ", namespace
+        cmd = """kubectl create namespace %s""" % namespace
+        ret, output = self.cmd.execute_command(cmd,
+                                               cwd=None,
+                                            env=None, popen=False)
+        if ret != 0:
+            print "Failed to create namespace %s" % namespace
+            return
+
+        print output
+        return 0
+
+    def delete_namespace(self, kmatic_options):
+        """Create a new namespace"""
+        if 'namespace' not in kmatic_options:
+            print "Namespace is required."
+            return
+        namespace = kmatic_options['namespace']
+        print "Delete namespace: ", namespace
+        cmd = """kubectl delete namespace %s""" % namespace
+        ret, output = self.cmd.execute_command(cmd,
+                                               cwd=None,
+                                               env=None, popen=False)
+        if ret != 0:
+            print "Failed to delete namespace %s" % namespace
+            return
+
+        print output
+        return 0
 
     def gcloud_create_kubecluster(self, kmatic_options):
         """Create a new Kubernetes cluster"""
