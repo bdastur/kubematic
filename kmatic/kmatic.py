@@ -27,14 +27,29 @@ def gcloud():
     print "gcloud"
 
 
+#################################################
+# namespace subcommand
+#################################################
 @namespace.command()
 @click.option("--namespace", type=str, help="Namespace name", required=True)
 def create(namespace):
     print "create namespace"
+    kmatic_options = build_kmatci_cli_options(namespace=namespace)
     khelper = kubehelper.KubeHelper()
-    khelper.create_namespace('test')
+    khelper.create_namespace(kmatic_options)
 
 
+@namespace.command()
+@click.option("--namespace", type=str, help="Namespace name", required=True)
+def delete(namespace):
+    print "Delete namespace"
+    kmatic_options = build_kmatci_cli_options(namespace=namespace)
+    khelper = kubehelper.KubeHelper()
+    khelper.delete_namespace(kmatic_options)
+
+#################################################
+# gcloud subcommand
+#################################################
 @gcloud.command()
 @click.option("--cluster-name", type=str, help="Cluster name",
               default="testcluster-1")
