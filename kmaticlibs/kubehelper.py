@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import sys
 import kmaticlibs.j2renderer as j2renderer
 import kmaticlibs.commands as commands
 
@@ -15,7 +16,22 @@ class KubeHelper(object):
             return
         namespace = kmatic_options['namespace']
         print "Create new namespace: ", namespace
-        cmd = """kubectl create namespace %s""" % namespace
+
+        j2obj = j2renderer.J2Renderer()
+        templatefile = "namespace.json.j2"
+        searchpath = "./templates"
+        obj = {}
+        obj['namespace'] = {}
+        obj['namespace']['name'] = namespace
+        obj['namespace']['name_label'] = namespace
+        rendered_data = j2obj.render_j2_template(templatefile, searchpath, obj)
+        print "rendered data: ", rendered_data
+        tempFile = j2obj.generate_rendered_template(
+        templatefile, searchpath, obj)
+        print "tempfile: ", tempFile
+        cmd = """kubectl create -f %s""" % tempFile
+
+        #cmd = """kubectl create namespace %s""" % namespace
         ret, output = self.cmd.execute_command(cmd,
                                                cwd=None,
                                             env=None, popen=False)
