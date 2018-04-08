@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
 import logging
 
 
@@ -20,6 +21,13 @@ class KmaticLogger(object):
             self.logger.debug("Logger already initalized.")
             return
 
+        # Check if logfile path exists.abs
+        path = os.path.dirname(logfile)
+        print "Path: ", path
+        if not os.path.exists(path):
+            print "Cannot initialize logger. No such path [%s] exists" % \
+                path
+            return
         formatStr = '[%(asctime)s %(levelname)5s' \
             ' %(process)d %(name)s]: %(message)s'
         logging.basicConfig(level=logging.DEBUG,
