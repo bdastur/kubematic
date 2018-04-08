@@ -6,6 +6,12 @@ import datetime
 import jinja2
 
 
+def display_rendered_template(templateFile, renderedData):
+    print 50 * "-"
+    print "[%s] \n%s" % (templateFile, renderedData)
+    print 50 *"-"
+
+
 class J2Renderer(object):
     def __init__(self):
         """Initialize J2Renderer."""

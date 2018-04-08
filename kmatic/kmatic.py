@@ -19,7 +19,8 @@ def build_kmatci_cli_options(namespace=None,
 @click.group()
 @click.pass_context
 def cli(ctx):
-    klogger = logger.KmaticLogger(logfile="./.tempdir/kmatic_log.txt")
+    klogger = logger.KmaticLogger(name="kmatic",
+                                  logfile="./.tempdir/kmatic_log.txt")
     try:
         if not klogger.logger:
             sys.exit()
@@ -30,7 +31,7 @@ def cli(ctx):
 
 @cli.group()
 def namespace():
-    print "namespace"
+    pass
 
 @cli.group()
 def gcloud():

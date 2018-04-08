@@ -6,8 +6,8 @@ import subprocess
 
 
 class Commands(object):
-    def __init__(self):
-        pass
+    def __init__(self, klogger):
+        self.klogger = klogger
 
     def execute_command(self, cmd, cwd=None, env=None, popen=False):
         """
@@ -37,7 +37,8 @@ class Commands(object):
                                                 shell=True,
                                                 env=env)
         except subprocess.CalledProcessError as err:
-            print "Failed to execute %s. Error is %s" % (cmd, err)
+            self.klogger.logger.error("cmd '%s' execution failed. Error: [%s]",
+                cmd, err)
             return 1, None
 
         return 0, cmdoutput
