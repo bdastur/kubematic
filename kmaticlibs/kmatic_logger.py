@@ -14,7 +14,6 @@ class KmaticLogger(object):
         :type logfile: String
         :param logfile: path to logfile.
         """
-        print "Kmaticlogger Initialize."
         if hasattr(KmaticLogger, 'logger'):
             self.logger = KmaticLogger.logger
             print "Kmatic logger"
@@ -23,7 +22,6 @@ class KmaticLogger(object):
 
         # Check if logfile path exists.abs
         path = os.path.dirname(logfile)
-        print "Path: ", path
         if not os.path.exists(path):
             print "Cannot initialize logger. No such path [%s] exists" % \
                 path

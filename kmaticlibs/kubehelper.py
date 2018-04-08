@@ -7,7 +7,7 @@ import kmaticlibs.commands as commands
 
 class KubeHelper(object):
     def __init__(self, klogger):
-        self.cmd = commands.Commands()
+        self.cmd = commands.Commands(klogger)
         self.klogger = klogger
 
     def create_namespace(self, kmatic_options):
@@ -25,18 +25,18 @@ class KubeHelper(object):
         obj['namespace']['name'] = namespace
         obj['namespace']['name_label'] = namespace
         rendered_data = j2obj.render_j2_template(templatefile, searchpath, obj)
-        print "Kubernetes template: \n%s" % rendered_data
         tempFile = j2obj.generate_rendered_template(
         templatefile, searchpath, obj)
-        print "tempfile: ", tempFile
-        cmd = """kubectl create -f %s""" % tempFile
+        j2renderer.display_rendered_template(tempFile, rendered_data)
 
+        cmd = """kubectl create -f %s""" % tempFile
         #cmd = """kubectl create namespace %s""" % namespace
         ret, output = self.cmd.execute_command(cmd,
                                                cwd=None,
-                                            env=None, popen=False)
+                                               env=None, popen=False)
         if ret != 0:
-            print "Failed to create namespace %s" % namespace
+            self.klogger.logger.error("Failed to create namespace %s",
+                                       namespace)
             return
 
         print output
