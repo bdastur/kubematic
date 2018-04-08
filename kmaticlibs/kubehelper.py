@@ -6,16 +6,16 @@ import kmaticlibs.j2renderer as j2renderer
 import kmaticlibs.commands as commands
 
 class KubeHelper(object):
-    def __init__(self):
+    def __init__(self, klogger):
         self.cmd = commands.Commands()
+        self.klogger = klogger
 
     def create_namespace(self, kmatic_options):
         """Create a new namespace"""
         if 'namespace' not in kmatic_options:
-            print "Namespace is required."
+            self.klogger.error("Namespace required")
             return
         namespace = kmatic_options['namespace']
-        print "Create new namespace: ", namespace
 
         j2obj = j2renderer.J2Renderer()
         templatefile = "namespace.json.j2"
@@ -25,7 +25,7 @@ class KubeHelper(object):
         obj['namespace']['name'] = namespace
         obj['namespace']['name_label'] = namespace
         rendered_data = j2obj.render_j2_template(templatefile, searchpath, obj)
-        print "rendered data: ", rendered_data
+        print "Kubernetes template: \n%s" % rendered_data
         tempFile = j2obj.generate_rendered_template(
         templatefile, searchpath, obj)
         print "tempfile: ", tempFile

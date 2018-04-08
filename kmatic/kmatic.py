@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
+import sys
 import click
 import kmaticlibs.kubehelper as kubehelper
+import kmaticlibs.kmatic_logger as logger
 
 def build_kmatci_cli_options(namespace=None,
                              cluster_name="testcluster-1"):
@@ -15,8 +17,16 @@ def build_kmatci_cli_options(namespace=None,
 
 
 @click.group()
-def cli():
-    pass
+@click.pass_context
+def cli(ctx):
+    klogger = logger.KmaticLogger(logfile="./.tempdir/kmatic_log.txt")
+    try:
+        if not klogger.logger:
+            sys.exit()
+    except AttributeError:
+        sys.exit()
+    ctx.obj = klogger
+
 
 @cli.group()
 def namespace():
@@ -32,10 +42,12 @@ def gcloud():
 #################################################
 @namespace.command()
 @click.option("--namespace", type=str, help="Namespace name", required=True)
-def create(namespace):
-    print "create namespace"
+@click.pass_context
+def create(ctx, namespace):
+    klogger = ctx.obj
+    klogger.logger.debug("Create new namespace %s", namespace)
     kmatic_options = build_kmatci_cli_options(namespace=namespace)
-    khelper = kubehelper.KubeHelper()
+    khelper = kubehelper.KubeHelper(klogger)
     khelper.create_namespace(kmatic_options)
 
 
@@ -44,7 +56,7 @@ def create(namespace):
 def delete(namespace):
     print "Delete namespace"
     kmatic_options = build_kmatci_cli_options(namespace=namespace)
-    khelper = kubehelper.KubeHelper()
+    khelper = kubehelper.KubeHelper(klogger)
     khelper.delete_namespace(kmatic_options)
 
 #################################################
@@ -56,7 +68,7 @@ def delete(namespace):
 def create_cluster(cluster_name):
     print "Create Kubernetes cluster in gcloud: ", cluster_name
     kmatic_options = build_kmatci_cli_options(cluster_name=cluster_name)
-    khelper = kubehelper.KubeHelper()
+    khelper = kubehelper.KubeHelper(klogger)
     khelper.gcloud_create_kubecluster(kmatic_options)
 
 
@@ -66,13 +78,12 @@ def create_cluster(cluster_name):
 def delete_cluster(cluster_name):
     print "Delete kubernetes cluster in gcp ", cluster_name
     kmatic_options = build_kmatci_cli_options(cluster_name=cluster_name)
-    khelper = kubehelper.KubeHelper()
+    khelper = kubehelper.KubeHelper(klogger)
     khelper.gcloud_delete_kubecluster(kmatic_options)
 
 
 def main():
-    print "main"
-    cli.add_command(namespace)
+    #cli.add_command(namespace)
     cli()
 
 
